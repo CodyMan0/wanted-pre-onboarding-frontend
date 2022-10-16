@@ -5,11 +5,9 @@ import { API } from '../Api';
 
 const TodoCreate = ({ todoList, setTodoList, setTodoInput, todoInput }) => {
   const [open, setOpen] = useState(false);
-  const [idNum, setIdNum] = useState(0);
 
   const onToggle = () => {
     setOpen(prev => !prev);
-    setIdNum(prev => prev + 1);
   };
 
   const onChange = e => {
@@ -22,20 +20,6 @@ const TodoCreate = ({ todoList, setTodoList, setTodoInput, todoInput }) => {
     setTodoInput('');
     setOpen(false);
   };
-
-  // const onSubmit = e => {
-  //   e.preventDefault();
-  //   setTodoList(prev => [
-  //     ...prev,
-  //     {
-  //       id: idNum,
-  //       text: input,
-  //       done: false,
-  //     },
-  //   ]);
-  //   setInput('');
-  //   setOpen(false);
-  // };
 
   return (
     <>
@@ -59,16 +43,16 @@ const TodoCreate = ({ todoList, setTodoList, setTodoInput, todoInput }) => {
 };
 
 const CircleButton = styled.button`
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 40px;
   border: none;
   outline: none;
-  font-size: 60px;
+  font-size: 40px;
   color: white;
   position: absolute;
-  left: 50%;
-  bottom: 0px;
+  right: -15px;
+  top: 0;
   transform: translate(-50%, 50%);
   z-index: 5;
   display: flex;

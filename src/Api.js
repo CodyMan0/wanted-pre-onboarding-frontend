@@ -32,7 +32,7 @@ export const API = {
       .then(data => setTodoList(prev => [...prev, data]));
   },
 
-  UPDATE: (id, todo, isCompleted) => {
+  Update: (id, todo, isCompleted, setTodoList) => {
     const updateUri = `${baseUrl}/todos/${id}`;
     const options = {
       method: 'PUT',
