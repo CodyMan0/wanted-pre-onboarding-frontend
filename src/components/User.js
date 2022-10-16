@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { baseUrl } from '../config';
 import Container from './Container';
 
-const User = ({ data, authType, setAuthType }) => {
+const User = ({ data }) => {
   const { title, text, url } = data;
 
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const User = ({ data, authType, setAuthType }) => {
               ? '로그인 정보를 확인해주세요.'
               : '회원 정보를 확인해주세요';
           alert(authTitle);
-          navigate('/');
+          navigate('/signup');
         }
       });
   };
@@ -78,6 +78,7 @@ const User = ({ data, authType, setAuthType }) => {
             name="email"
             value={authInputs.email}
             placeholder="이메일"
+            autocomplete="current-password"
             onChange={handleChangeInputs}
           />
           <Label htmlFor="password">password</Label>
@@ -86,6 +87,7 @@ const User = ({ data, authType, setAuthType }) => {
             name="password"
             value={authInputs.password}
             placeholder="비밀번호"
+            autocomplete="current-password"
             onChange={handleChangeInputs}
           />
           {title === 'SignUp' && (
@@ -96,6 +98,7 @@ const User = ({ data, authType, setAuthType }) => {
                 name="passwordConfirm"
                 value={authInputs.passwordConfirm}
                 placeholder="비밀번호 재확인"
+                autocomplete="current-password"
                 onChange={handleChangeInputs}
               />
             </>
