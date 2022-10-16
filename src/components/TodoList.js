@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import TodoItem from './TodoItem';
 
-const TodoList = ({ todoList }) => {
-  console.log(todoList);
+const TodoList = ({ todoList, setTodoList }) => {
   return (
     <Container>
       {todoList.map(todoItem => (
         <TodoItem
           key={todoItem.id}
           id={todoItem.id}
-          text={todoItem.text}
-          done={todoItem.done}
+          todo={todoItem.todo}
+          isCompleted={todoItem.isCompleted}
+          todoList={todoList}
+          setTodoList={setTodoList}
         />
       ))}
     </Container>

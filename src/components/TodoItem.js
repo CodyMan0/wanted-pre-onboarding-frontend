@@ -1,24 +1,33 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { MdDone, MdDelete } from 'react-icons/md';
+import { API } from '../Api';
 
-const TodoItem = ({ id, text, done }) => {
-  // const [todoList, setTodoList] = useRecoilState(todoListState);
+const TodoItem = ({ id, todo, isCompleted, todoList, setTodoList }) => {
+  const onToggle = () => {
+    setTodoList(
+      todoList.map(todo =>
+        todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+      )
+    );
+  };
 
-  // const onToggle = () => {
-  //   setTodoList(
-  //     todoList.map(todo =>
-  //       todo.id === id ? { ...todo, done: !todo.done } : todo
-  //     )
-  //   );
-  // };
-  // const onRemove = () => {
-  //   setTodoList(todoList.filter(todo => todo.id !== id));
-  // };
+  const deleteList = selectedId => {
+    if (window.confirm('정말로 삭제하시겠습니까?')) {
+      setTodoList(prev => prev.filter(({ id }) => id !== selectedId));
+      API.Delete(selectedId);
+    }
+  };
 
   return (
     <Container>
-      <Text done={done}>{text}</Text>
-      <RemoveBtn />
+      <CheckCircle isCompleted={isCompleted} onClick={onToggle}>
+        {isCompleted && <MdDone />}
+      </CheckCircle>
+      <Text done={isCompleted}>{todo}</Text>
+      <RemoveBtn onClick={() => deleteList(id)}>
+        <MdDelete />
+      </RemoveBtn>
     </Container>
   );
 };
@@ -42,7 +51,7 @@ const CheckCircle = styled.div`
   margin-right: 20px;
   cursor: pointer;
   ${props =>
-    props.done &&
+    props.isCompleted &&
     css`
       border: 1px solid #38d9a9;
       color: #38d9a9;
@@ -52,7 +61,7 @@ const CheckCircle = styled.div`
 const Text = styled.div`
   flex: 1;
   font-size: 21px;
-  color: ${props => (props.done ? '#ced4da' : '#495057')};
+  color: ${props => (props.isCompleted ? '#ced4da' : '#495057')};
 `;
 
 const RemoveBtn = styled.div`

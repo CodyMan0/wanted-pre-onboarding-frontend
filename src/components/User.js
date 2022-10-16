@@ -59,6 +59,14 @@ const User = ({ data, authType, setAuthType }) => {
         }
       });
   };
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      alert('자동 로그인 되었습니다.');
+      navigate('/todo');
+    }
+  }, [navigate]);
+
   return (
     <Container>
       <Wrapper>

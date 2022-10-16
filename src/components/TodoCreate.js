@@ -1,47 +1,52 @@
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
-import { useSetRecoilState } from 'recoil';
-import { todoListState } from '../store/todoStore';
+import { API } from '../Api';
 
-const TodoCreate = () => {
+const TodoCreate = ({ todoList, setTodoList, setTodoInput, todoInput }) => {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState('');
-  const setTodoList = useSetRecoilState(todoListState);
+  const [idNum, setIdNum] = useState(0);
 
   const onToggle = () => {
     setOpen(prev => !prev);
+    setIdNum(prev => prev + 1);
   };
 
   const onChange = e => {
-    setInput(e.target.value);
+    setTodoInput(e.target.value);
   };
 
-  const onSubmit = e => {
+  const addList = e => {
     e.preventDefault();
-    setTodoList(prev => [
-      ...prev,
-      {
-        id: uuidv4(),
-        text: input,
-        done: false,
-      },
-    ]);
-    setInput('');
+    API.Post({ todo: todoInput }, setTodoList);
+    setTodoInput('');
     setOpen(false);
   };
+
+  // const onSubmit = e => {
+  //   e.preventDefault();
+  //   setTodoList(prev => [
+  //     ...prev,
+  //     {
+  //       id: idNum,
+  //       text: input,
+  //       done: false,
+  //     },
+  //   ]);
+  //   setInput('');
+  //   setOpen(false);
+  // };
 
   return (
     <>
       {open && (
         <InputContainer>
-          <InputForm onSubmit={onSubmit}>
+          <InputForm onSubmit={addList}>
             <Input
               autoFocus
               placeholder="할 일을 입력 후, Enter 를 누르세요"
               onChange={onChange}
-              value={input}
+              value={todoInput}
             />
           </InputForm>
         </InputContainer>
