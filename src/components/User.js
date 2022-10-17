@@ -26,12 +26,12 @@ const User = ({ data }) => {
     SignUp: emailValidation && passwordValidation && passwordReValidation,
   };
 
-  const handleChangeInputs = e => {
+  const onChangeInputs = e => {
     const { name, value } = e.target;
     setAuthInputs({ ...authInputs, [name]: value });
   };
 
-  const handleSubmitAuth = e => {
+  const onSubmitAuth = e => {
     e.preventDefault();
     const { email, password } = authInputs;
     const authUrl =
@@ -71,7 +71,7 @@ const User = ({ data }) => {
     <Container>
       <Wrapper>
         <Header>{title}</Header>
-        <Form onSubmit={handleSubmitAuth}>
+        <Form onSubmit={onSubmitAuth}>
           <Label htmlFor="email">email</Label>
           <Input
             type="email"
@@ -79,7 +79,7 @@ const User = ({ data }) => {
             value={authInputs.email}
             placeholder="이메일"
             autocomplete="current-password"
-            onChange={handleChangeInputs}
+            onChange={onChangeInputs}
           />
           <Label htmlFor="password">password</Label>
           <Input
@@ -88,7 +88,7 @@ const User = ({ data }) => {
             value={authInputs.password}
             placeholder="비밀번호"
             autocomplete="current-password"
-            onChange={handleChangeInputs}
+            onChange={onChangeInputs}
           />
           {title === 'SignUp' && (
             <>
@@ -99,7 +99,7 @@ const User = ({ data }) => {
                 value={authInputs.passwordConfirm}
                 placeholder="비밀번호 재확인"
                 autocomplete="current-password"
-                onChange={handleChangeInputs}
+                onChange={onChangeInputs}
               />
             </>
           )}

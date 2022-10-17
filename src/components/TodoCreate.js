@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
 import { API } from '../Api';
+import styled, { css } from 'styled-components';
 
-const TodoCreate = ({ todoList, setTodoList, setTodoInput, todoInput }) => {
+const TodoCreate = ({ setTodoList, setTodoInput, todoInput }) => {
   const [open, setOpen] = useState(false);
 
   const onToggle = () => {
