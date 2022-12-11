@@ -1,74 +1,104 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import useMutation from '../utils/hooks/useMutation';
+import { setLocalStorage, TOKEN_NAME } from '../utils/localStorage';
 
 import Container from './Container';
 
-const User = ({ title, text, url }) => {
+const User = ({ data }) => {
+  const { title, text, url } = data;
+
   const navigate = useNavigate();
-  const [authInputs, setAuthInputs] = useState({
+  const [signInInfo, setSignInInfo] = useState({
+    email: '',
+    password: '',
+  });
+  const [signUpInfo, setSignUpInfo] = useState({
     email: '',
     password: '',
     passwordConfirm: '',
   });
+  const [userError, setUserError] = useState({
+    emailError: '',
+    passwordError: '',
+  });
+  const [
+    signInAndUp,
+    { data: signInData, isLoading: signInLoading, error: signInError },
+  ] = useMutation({
+    title: title,
+    method: 'POST',
+  });
 
   const onHandleChange = e => {
     const { name, value } = e.target;
-    setAuthInputs({ ...authInputs, [name]: value });
+    if (title === 'Login') setSignInInfo({ ...signInInfo, [name]: value });
+    if (title === 'SignUp') setSignUpInfo({ ...signUpInfo, [name]: value });
   };
 
-  const onHandleSubmit = e => {
-    e.preventDefault();
-    const { email, password } = authInputs;
-    const authUrl =
-      title === 'Login'
-        ? `${process.env.REACT_APP_URL}/auth/signin`
-        : `${process.env.REACT_APP_URL}/auth/signup`;
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    };
-
-    fetch(authUrl, options)
-      .then(res => res.json())
-      .then(data => {
-        if (data.access_token) {
-          localStorage.setItem('token', data.access_token);
-          navigate('/todo');
-        } else {
-          const authTitle =
-            title === 'Login'
-              ? '로그인 정보를 확인해주세요.'
-              : '회원 정보를 확인해주세요';
-          alert(authTitle);
-          navigate('/signup');
-        }
-      });
+  const onHandleSubmit = async event => {
+    event.preventDefault();
+    if (signInInfo.email === '' || signInInfo.password === '') {
+      setUserError(prev => ({
+        ...prev,
+        emailError: '이메일과 패스워드가 필요합니다.',
+      }));
+      return;
+    }
+    if (!signInInfo.email.includes('@') || signInInfo.email === '') {
+      setUserError(prev => ({
+        ...prev,
+        emailError: '이메일 형식으로 입력해주세요.',
+      }));
+      return;
+    }
+    if (signInInfo.password.length < 8 || signInInfo.password === '') {
+      setUserError(prev => ({
+        ...prev,
+        passwordError: '비밀번호 8자 이상 입력해주세요.',
+      }));
+      return;
+    }
+    if (title === 'Login') {
+      await signInAndUp(signInInfo);
+    } else {
+      await signInAndUp(signUpInfo);
+    }
   };
+  useEffect(() => {
+    if (signInData && signInData.access_token) {
+      setLocalStorage({ name: TOKEN_NAME, value: signInData.access_token });
+      navigate('/todo');
+    } else {
+      navigate('/');
+    }
+  }, [signInData]);
 
   return (
     <Container>
       <Wrapper>
         <Header>{title}</Header>
-        <Form onSubmit={onHandleSubmit}>
+        <Form onSubmit={event => onHandleSubmit(event)}>
           <Label htmlFor="email">email</Label>
           <Input
             type="email"
             name="email"
-            value={authInputs.email}
+            value={title === 'Login' ? signInInfo.email : signUpInfo.email}
             placeholder="이메일"
             autocomplete="current-password"
-            onChange={onHandleChange}
+            onChange={e => onHandleChange(e, title)}
           />
           <Label htmlFor="password">password</Label>
           <Input
             type="password"
             name="password"
-            value={authInputs.password}
+            value={
+              title === 'Login' ? signInInfo.password : signUpInfo.password
+            }
             placeholder="비밀번호"
             autocomplete="current-password"
-            onChange={onHandleSubmit}
+            onChange={e => onHandleChange(e, title)}
           />
           {title === 'SignUp' && (
             <>
@@ -76,10 +106,10 @@ const User = ({ title, text, url }) => {
               <Input
                 type="password"
                 name="passwordConfirm"
-                value={authInputs.passwordConfirm}
+                value={signUpInfo.passwordConfirm}
                 placeholder="비밀번호 재확인"
                 autocomplete="current-password"
-                onChange={onHandleChange}
+                onChange={e => onHandleChange(e, title)}
               />
             </>
           )}
