@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { baseUrl } from '../config';
+
 import Container from './Container';
 
 const User = ({ data }) => {
@@ -35,7 +35,9 @@ const User = ({ data }) => {
     e.preventDefault();
     const { email, password } = authInputs;
     const authUrl =
-      title === 'Login' ? `${baseUrl}/auth/signin` : `${baseUrl}/auth/signup`;
+      title === 'Login'
+        ? `${process.env.REACT_APP_URL}/auth/signin`
+        : `${process.env.REACT_APP_URL}/auth/signup`;
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -59,13 +61,6 @@ const User = ({ data }) => {
         }
       });
   };
-
-  useEffect(() => {
-    if (localStorage.getItem('token')) {
-      alert('자동 로그인 되었습니다.');
-      navigate('/todo');
-    }
-  }, [navigate]);
 
   return (
     <Container>
