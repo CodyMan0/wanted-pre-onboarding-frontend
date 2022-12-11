@@ -4,9 +4,7 @@ import styled from 'styled-components';
 
 import Container from './Container';
 
-const User = ({ data }) => {
-  const { title, text, url } = data;
-
+const User = ({ title, text, url }) => {
   const navigate = useNavigate();
   const [authInputs, setAuthInputs] = useState({
     email: '',
@@ -14,24 +12,12 @@ const User = ({ data }) => {
     passwordConfirm: '',
   });
 
-  let token = null;
-
-  const emailValidation = authInputs.email.includes('@');
-  const passwordValidation = authInputs.password.length >= 8;
-  const passwordReValidation =
-    authInputs.password === authInputs.passwordConfirm;
-
-  const isValidInputs = {
-    Login: emailValidation && passwordValidation,
-    SignUp: emailValidation && passwordValidation && passwordReValidation,
-  };
-
-  const onChangeInputs = e => {
+  const onHandleChange = e => {
     const { name, value } = e.target;
     setAuthInputs({ ...authInputs, [name]: value });
   };
 
-  const onSubmitAuth = e => {
+  const onHandleSubmit = e => {
     e.preventDefault();
     const { email, password } = authInputs;
     const authUrl =
@@ -48,8 +34,7 @@ const User = ({ data }) => {
       .then(res => res.json())
       .then(data => {
         if (data.access_token) {
-          token = data.access_token;
-          localStorage.setItem('token', token);
+          localStorage.setItem('token', data.access_token);
           navigate('/todo');
         } else {
           const authTitle =
@@ -66,7 +51,7 @@ const User = ({ data }) => {
     <Container>
       <Wrapper>
         <Header>{title}</Header>
-        <Form onSubmit={onSubmitAuth}>
+        <Form onSubmit={onHandleSubmit}>
           <Label htmlFor="email">email</Label>
           <Input
             type="email"
@@ -74,7 +59,7 @@ const User = ({ data }) => {
             value={authInputs.email}
             placeholder="이메일"
             autocomplete="current-password"
-            onChange={onChangeInputs}
+            onChange={onHandleChange}
           />
           <Label htmlFor="password">password</Label>
           <Input
@@ -83,7 +68,7 @@ const User = ({ data }) => {
             value={authInputs.password}
             placeholder="비밀번호"
             autocomplete="current-password"
-            onChange={onChangeInputs}
+            onChange={onHandleSubmit}
           />
           {title === 'SignUp' && (
             <>
@@ -94,13 +79,11 @@ const User = ({ data }) => {
                 value={authInputs.passwordConfirm}
                 placeholder="비밀번호 재확인"
                 autocomplete="current-password"
-                onChange={onChangeInputs}
+                onChange={onHandleChange}
               />
             </>
           )}
-          <Button type="submit" disabled={!isValidInputs[title]}>
-            {title}
-          </Button>
+          <Button type="submit">{title}</Button>
         </Form>
 
         <LinkContainer>
