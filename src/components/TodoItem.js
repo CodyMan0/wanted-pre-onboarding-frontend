@@ -152,6 +152,7 @@ const UpdateBtn = styled.button`
   color: #dee2e6;
   font-size: ${props => (props.name === 'updateMode' ? '15px' : '24px')};
   margin-right: 10px;
+  margin-left: 10px;
   cursor: pointer;
   display: none;
   ${Container}:hover & {
