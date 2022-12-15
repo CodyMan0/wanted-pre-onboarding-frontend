@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import { MdDone, MdDelete, MdMode } from 'react-icons/md';
-import { API } from '../Api';
 import styled, { css } from 'styled-components';
+import useMutation from '../utils/hooks/useMutation';
 
 const TodoItem = ({ id, todo, isCompleted, todoList, setTodoList }) => {
-  const [updateMode, setUpdateMode] = useState(false);
-  const [updateContent, setUpdateContent] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  console.log('🚀 ~ file: TodoItem.js:8 ~ TodoItem ~ editMode', editMode);
+
+  const [editContent, setEditContent] = useState('');
+
+  const [edit, { data: editData, isLoading: editLoading }] = useMutation({
+    url: `/todos/${id}`,
+    method: 'PUT',
+  });
+
+  const [deleteTodo] = useMutation({
+    url: `/todos/${id}`,
+    method: 'DELETE',
+  });
 
   const onToggle = () => {
     setTodoList(
@@ -15,23 +27,24 @@ const TodoItem = ({ id, todo, isCompleted, todoList, setTodoList }) => {
     );
   };
 
-  const deleteList = selectedId => {
-    if (window.confirm('삭제하시겠습니까?')) {
-      setTodoList(prev => prev.filter(({ id }) => id !== selectedId));
-      API.Delete(selectedId);
-    }
+  const onDeleteTodo = () => {
+    deleteTodo({});
+    setTodoList(prev => {
+      const newTodo = prev.filter(prev => prev.id !== id);
+      return [...newTodo];
+    });
+    setEditMode(false);
   };
 
-  const updateList = (e, selectedId) => {
+  const onEditTodo = (e, selectedId) => {
     e.preventDefault();
-    if (window.confirm('수정하시겠습니까?')) {
-      const [updateValue] = todoList.filter(({ id }) => id === selectedId);
-      API.Update(selectedId, updateValue.todo, updateValue.isCompleted);
-    }
+    if (editContent === '') return;
+    edit({ todo: editContent, isCompleted: true });
+    setEditContent('');
   };
 
   const updateListValue = (e, selectedId) => {
-    setUpdateContent(e.target.value);
+    setEditContent(e.target.value);
     setTodoList(prev =>
       prev.map(({ id, todo, isCompleted, userId }) => {
         if (id === selectedId) {
@@ -43,49 +56,58 @@ const TodoItem = ({ id, todo, isCompleted, todoList, setTodoList }) => {
   };
 
   const onClickUpdate = e => {
-    setUpdateMode(prev => !prev);
-    updateList(e, id);
+    setEditMode(prev => !prev);
+    onEditTodo(e, id);
   };
 
   const editInput = () => {
-    setUpdateMode(prev => !prev);
+    setEditMode(prev => !prev);
   };
-
-  if (updateMode) {
-    return (
-      <Container>
-        <CheckCircle isCompleted={isCompleted} onClick={onToggle}>
-          {isCompleted && <MdDone />}
-        </CheckCircle>
-        <TextInput
-          value={updateContent}
-          onChange={e => updateListValue(e, id)}
-        />
-        <UpdateBtn name="updateMode" onClick={e => onClickUpdate(e, id)}>
-          수정하기
-        </UpdateBtn>
-        <RemoveBtn onClick={() => deleteList(id)}>
-          <MdDelete />
-        </RemoveBtn>
-      </Container>
-    );
-  }
 
   return (
     <Container>
       <CheckCircle isCompleted={isCompleted} onClick={onToggle}>
         {isCompleted && <MdDone />}
       </CheckCircle>
-      <Text isCompleted={isCompleted}>{todo}</Text>
-      <UpdateBtn onClick={editInput}>
-        <MdMode />
-      </UpdateBtn>
-      <RemoveBtn onClick={() => deleteList(id)}>
-        <MdDelete />
-      </RemoveBtn>
+
+      {editMode ? (
+        <>
+          <TextInput
+            value={editContent}
+            onChange={e => updateListValue(e, id)}
+          />
+          <UpdateBtn name="updateMode" onClick={e => onClickUpdate(e, id)}>
+            수정하기
+          </UpdateBtn>
+          <RemoveBtn onClick={() => onDeleteTodo(id)}>
+            <MdDelete />
+          </RemoveBtn>
+        </>
+      ) : (
+        <>
+          <Text isCompleted={isCompleted}>{todo}</Text>
+          <UpdateBtn onClick={editInput}>
+            <MdMode />
+          </UpdateBtn>
+          <RemoveBtn onClick={() => onDeleteTodo(id)}>
+            <MdDelete />
+          </RemoveBtn>
+        </>
+      )}
     </Container>
   );
 };
+
+// return (
+//   <Container>
+//     <CheckCircle isCompleted={isCompleted} onClick={onToggle}>
+//       {isCompleted && <MdDone />}
+//     </CheckCircle>
+//
+//
+//
+//   </Container>
+// );
 
 const Container = styled.div`
   padding: 12px 0;

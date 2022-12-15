@@ -1,36 +1,57 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
-import { API } from '../Api';
-import styled, { css } from 'styled-components';
+import useMutation from '../utils/hooks/useMutation';
 
-const TodoCreate = ({ setTodoList, setTodoInput, todoInput }) => {
+const TodoCreate = ({ setTodoList }) => {
   const [open, setOpen] = useState(false);
+  const [todo, setTodo] = useState('');
+  const [submitTodo, { data, isLoading, error }] = useMutation({
+    url: '/todos',
+    method: 'POST',
+  });
 
   const onToggle = () => {
     setOpen(prev => !prev);
   };
 
   const onChange = e => {
-    setTodoInput(e.target.value);
+    setTodo(e.target.value);
   };
 
-  const addList = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    API.Post({ todo: todoInput }, setTodoList);
-    setTodoInput('');
+    if (todo === '') {
+      return;
+    }
+    submitTodo({ todo });
+    setTodo('');
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (data) {
+      setTodoList(prev => [
+        ...prev,
+        {
+          id: data.id,
+          isCompleted: data.isCompleted,
+          todo: data.todo,
+          userId: data.userId,
+        },
+      ]);
+    }
+  }, [data, setTodoList]);
 
   return (
     <>
       {open && (
         <InputContainer>
-          <InputForm onSubmit={addList}>
+          <InputForm onSubmit={handleSubmit}>
             <Input
               autoFocus
               placeholder="할 일을 입력 후, Enter 를 누르세요"
               onChange={onChange}
-              value={todoInput}
+              value={todo}
             />
           </InputForm>
         </InputContainer>

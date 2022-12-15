@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const TodoHeader = () => {
+const TodoHeader = ({ onLogout }) => {
   const today = new Date();
   const convertDay = day => {
     const weekday = [
@@ -19,11 +19,12 @@ const TodoHeader = () => {
 
   return (
     <Container>
-      <H1>Wantodo</H1>
+      <H1>My Todolist</H1>
       <H2>
         {today.getFullYear()}년 {today.getMonth() + 1}월 {today.getDate()}일
       </H2>
       <Day>{convertDay(today.getDay())}</Day>
+      <button onClick={onLogout}>로그 아웃</button>
     </Container>
   );
 };

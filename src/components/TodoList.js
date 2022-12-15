@@ -2,15 +2,15 @@ import React from 'react';
 import TodoItem from './TodoItem';
 import styled from 'styled-components';
 
-const TodoList = ({ todoList, setTodoList }) => {
+const TodoList = ({ todoList = [], setTodoList }) => {
+  console.log(todoList);
   return (
     <Container>
       {todoList.map(todoItem => (
         <TodoItem
           key={todoItem.id}
           id={todoItem.id}
-          todo={todoItem.todo}
-          isCompleted={todoItem.isCompleted}
+          {...todoItem}
           todoList={todoList}
           setTodoList={setTodoList}
         />

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getLocalStorage, TOKEN_NAME } from '../localStorage';
 
-const useMutation = ({ title, method }) => {
+const useMutation = ({ url, title, method }) => {
   const [value, setValue] = useState({
     data: undefined,
     isLoading: false,
@@ -12,9 +12,14 @@ const useMutation = ({ title, method }) => {
     try {
       const token = getLocalStorage({ name: TOKEN_NAME });
       setValue(prev => ({ ...prev, isLoading: true }));
-      const authUrl = title === 'Login' ? '/auth/signin' : '/auth/signup';
+      const AuthUrl = title === 'Login' ? '/auth/signin' : '/auth/signup';
+
+      const isUrl = title
+        ? `${process.env.REACT_APP_URL}${AuthUrl}`
+        : `${process.env.REACT_APP_URL}${url}`;
+
       const response = await (
-        await fetch(`${process.env.REACT_APP_URL}${authUrl}`, {
+        await fetch(isUrl, {
           method: method.toUpperCase(),
           body: JSON.stringify(data),
           headers: {

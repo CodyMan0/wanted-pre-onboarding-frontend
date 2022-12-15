@@ -4,31 +4,32 @@ import Container from '../components/Container';
 import TodoHeader from '../components/TodoHeader';
 import TodoList from '../components/TodoList';
 import TodoCreate from '../components/TodoCreate';
-import { API } from '../Api';
+import { deleteLocalStorage, TOKEN_NAME } from '../utils/localStorage';
+import { useAuth } from '../context/LoginContext';
+import useFetch from '../utils/hooks/useFetch';
 
 const Todo = () => {
-  const token = localStorage.getItem('token');
-  const [todoInput, setTodoInput] = useState('');
+  const { data, isLoading } = useFetch({ url: '/todos' });
+
   const [todoList, setTodoList] = useState([]);
+  const { setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      API.Get(setTodoList);
-    }
-    if (token === null) {
-      navigate('/');
-    }
-  }, [token, navigate]);
+    setTodoList(data);
+  }, [data]);
+
+  const onLogout = () => {
+    deleteLocalStorage({ name: TOKEN_NAME });
+    setIsLoggedIn(false);
+    navigate('/', { replace: true });
+  };
+
   return (
     <Container>
-      <TodoHeader />
+      <TodoHeader onLogout={onLogout} />
       <TodoList todoList={todoList} setTodoList={setTodoList} />
-      <TodoCreate
-        setTodoList={setTodoList}
-        setTodoInput={setTodoInput}
-        todoInput={todoInput}
-      />
+      <TodoCreate setTodoList={setTodoList} />
     </Container>
   );
 };
