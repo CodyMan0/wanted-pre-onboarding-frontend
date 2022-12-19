@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router';
-import User from '../components/User';
+import User from '../components/user/User';
 
 const SignIn = () => {
   const location = useLocation();
@@ -14,7 +14,7 @@ const SignIn = () => {
   };
   const SIGNUP_DATA = {
     title: 'SignUp',
-    text: '이미 가입하셨나요?',
+    text: '로그인 화면으로 이동',
     url: '/',
   };
 

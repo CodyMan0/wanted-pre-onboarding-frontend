@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import useMutation from '../utils/hooks/useMutation';
-import { setLocalStorage, TOKEN_NAME } from '../utils/localStorage';
+import useMutation from '../../utils/hooks/useMutation';
+import { setLocalStorage, TOKEN_NAME } from '../../utils/localStorage';
 
-import Container from './Container';
+import Container from '../Container';
+import ErrorMessage from './ErrorMessage';
 
-const User = ({ data }) => {
-  const { title, text, url } = data;
-
+const User = ({ data: { title, text, url } }) => {
   const navigate = useNavigate();
   const [signInInfo, setSignInInfo] = useState({
     email: '',
@@ -19,26 +18,38 @@ const User = ({ data }) => {
     password: '',
     passwordConfirm: '',
   });
+
   const [userError, setUserError] = useState({
     emailError: '',
     passwordError: '',
   });
-  const [
-    signInAndUp,
-    { data: signInData, isLoading: signInLoading, error: signInError },
-  ] = useMutation({
-    title: title,
-    method: 'POST',
-  });
 
+  const [networkError, setNetworkError] = useState('');
+
+  const [signInAndUp, { data: signInAndUpData, error: signInAndUpError }] =
+    useMutation({
+      title: title,
+      method: 'POST',
+    });
   const onHandleChange = e => {
     const { name, value } = e.target;
-    if (title === 'Login') setSignInInfo({ ...signInInfo, [name]: value });
-    if (title === 'SignUp') setSignUpInfo({ ...signUpInfo, [name]: value });
+    if (title === 'Login') {
+      setSignInInfo({ ...signInInfo, [name]: value });
+    }
+    if (title === 'SignUp') {
+      setSignUpInfo({ ...signUpInfo, [name]: value });
+    }
   };
 
   const onHandleSubmit = async event => {
     event.preventDefault();
+
+    if (title === 'Login') {
+      await signInAndUp(signInInfo);
+    } else {
+      await signInAndUp(signUpInfo);
+    }
+
     if (signInInfo.email === '' || signInInfo.password === '') {
       setUserError(prev => ({
         ...prev,
@@ -60,21 +71,34 @@ const User = ({ data }) => {
       }));
       return;
     }
-    if (title === 'Login') {
-      await signInAndUp(signInInfo);
-    } else {
-      await signInAndUp(signUpInfo);
+
+    if (signUpInfo.password !== signUpInfo.passwordConfirm) {
+      setUserError(prev => ({
+        ...prev,
+        passwordError: '비밀번호를 확인해주세요.',
+      }));
+      return;
     }
   };
-  useEffect(() => {
-    if (signInData && signInData.access_token) {
-      setLocalStorage({ name: TOKEN_NAME, value: signInData.access_token });
-      navigate('/todo');
-    } else {
-      navigate('/');
-    }
-  }, [signInData]);
 
+  useEffect(() => {
+    if (signInAndUpError) {
+      setNetworkError(signInAndUpError);
+    }
+  }, [signInAndUpError]);
+
+  useEffect(() => {
+    if (signInAndUpData && signInAndUpData.access_token) {
+      setLocalStorage({
+        name: TOKEN_NAME,
+        value: signInAndUpData.access_token,
+      });
+      navigate('/todo');
+    }
+  }, [signInAndUpData]);
+
+  const errorMessage =
+    userError.emailError || userError.passwordError || networkError;
   return (
     <Container>
       <Wrapper>
@@ -113,6 +137,7 @@ const User = ({ data }) => {
               />
             </>
           )}
+          {errorMessage && <ErrorMessage errorText={errorMessage} />}
           <Button type="submit">{title}</Button>
         </Form>
 
@@ -187,6 +212,6 @@ const LinkContainer = styled.div`
   display: flex;
   justify-content: center;
   margin: 0 auto;
-  margin-top: 40px;
+  margin-top: 20px;
   height: 30px;
 `;
