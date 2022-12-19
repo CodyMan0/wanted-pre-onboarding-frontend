@@ -4,6 +4,7 @@
 
 - #### 배포 링크 : [👉베포 링크👈](https://codyman0.github.io/wanted-pre-onboarding-frontend/)
 - #### 숏에세이 : [👉숏에세이 링크👈](https://blog.naver.com/hys8375/222902309033)
+- #### 리팩토링 : [👉블로그 링크👈](https://velog.io/@sharphand1/%EC%9B%90%ED%8B%B0%EB%93%9C-%EA%B3%BC%EC%A0%9C-%EC%BD%94%EB%93%9C-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81)
 
 ### STACK
 
