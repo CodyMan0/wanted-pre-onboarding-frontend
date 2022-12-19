@@ -3,7 +3,6 @@ import TodoItem from './TodoItem';
 import styled from 'styled-components';
 
 const TodoList = ({ todoList = [], setTodoList }) => {
-  console.log(todoList);
   return (
     <Container>
       {todoList.map(todoItem => (

@@ -24,13 +24,26 @@ const TodoHeader = ({ onLogout }) => {
         {today.getFullYear()}년 {today.getMonth() + 1}월 {today.getDate()}일
       </H2>
       <Day>{convertDay(today.getDay())}</Day>
-      <button onClick={onLogout}>로그 아웃</button>
+      <Button onClick={onLogout}>로그 아웃</Button>
     </Container>
   );
 };
 const Container = styled.div`
+  position: relative;
   padding: 48px 0 24px;
   border-bottom: 1px solid #e9ecef;
+`;
+const Button = styled.div`
+  position: absolute;
+  right: 0;
+  padding: 8px 16px;
+  color: white;
+  background-color: #38d9a9;
+  border: 1px solid #38d9a9;
+  border-radius: 5px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const H1 = styled.h1`
